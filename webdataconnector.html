@@ -71,8 +71,15 @@
                 table.appendRows(tableData);
                 doneCallback();
             });
+
         };
         tableau.registerConnector(myConnector);
+        $(document).ready(function () {
+		    $("#submitButton").click(function () {
+		        tableau.connectionName = "Building Approvals by Statistical Area (SA2 and above)";
+		        tableau.submit();
+		    });
+		});
     })();
 </script>
 </head>
@@ -81,7 +88,7 @@
     <div class="container container-table">
         <div class="row vertical-center-row">
             <div class="text-center col-md-4 col-md-offset-4">
-                <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get the mothertruckin' DATA!</button>
+                <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Building Approvals</button>
             </div>
         </div>
     </div>
