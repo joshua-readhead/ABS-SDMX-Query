@@ -20,61 +20,49 @@
             id : "ABS_BA_SA2_ASGS2016",
             alias : "Building Approvals by Statistical Area (SA2 and above)",
             columns : [
-              { id : "SECTOR", alias : "Sector", dataType : tableau.dataTypeEnum.string },
-              { id : "WORK", alias : "Work", dataType : tableau.dataTypeEnum.string },
-              { id : "BUILDING_TYPE", alias : "Building Type", dataType : tableau.dataTypeEnum.string },
-              { id : "REGIONTYPE", alias : "Region", dataType : tableau.dataTypeEnum.string },
+              { id : "MEASURE", alias : "Measure", dataType : tableau.dataTypeEnum.string },
+              { id : "SECTOR", alias : "Sector of Ownership", dataType : tableau.dataTypeEnum.string },
+              { id : "WORK", alias : "Type of Work", dataType : tableau.dataTypeEnum.string },
+              { id : "BUILDING_TYPE", alias : "Type of Building", dataType : tableau.dataTypeEnum.string },
+              { id : "REGIONTYPE", alias : "Geography Level", dataType : tableau.dataTypeEnum.string },
               { id : "ASGS_2016", alias : "Region", dataType : tableau.dataTypeEnum.string },
               { id : "FREQUENCY", alias : "Frequency", dataType : tableau.dataTypeEnum.string },
-              { id : "TIME", alias : "Time", dataType : tableau.dataTypeEnum.string },
-              { id : "obs", alias : "observation", dataType : tableau.dataTypeEnum.float }
+              { id : "TIME_PERIOD", alias : "Time", dataType : tableau.dataTypeEnum.string },
+              { id : "VALUE", alias : "Value", dataType : tableau.dataTypeEnum.float }
             ]
         };
         myConnector.getSchema = function(schemaCallback) {
             schemaCallback([tableInfo]);
         };
         myConnector.getData = function(table, doneCallback) {
-            var tableData = [],
-                SECTOR = "",
-                WORK = "",
-                BUILDING_TYPE = "",
-                REGIONTYPE = "",
-                ASGS_2016 = "",
-                FREQUENCY = "",
-                TIME = "",
-                obs = 0;
-
+        	var getDataRow = function(resp, key) {
+        		var row = {};
+        		var arrKey = key.split(':');
+        		for(var i=0;i<arrKey.length;i++) {
+        			row[tableInfo.columns[i].id]=resp.structure.dimensions.observation[i].values[arrKey[i]].name;
+        		}
+        		obs["VALUE"] = resp.dataSets[0].observations[key][0];
+        		return obs;
+        	}
             $.getJSON("http://stat.data.abs.gov.au/sdmx-json/data/ABS_BA_SA2_ASGS2016/all/all?startTime=2018-08&endTime=2018-08&dimensionAtObservation=allDimensions", function(resp) {
                 var obsvs = resp.dataSets[0].observations;
+                var tableData = [];
                 for (var i = 0, len = Object.keys(obsvs).length; i < len; i++) {
-                    var arrKey = Object.keys(obsvs)[i].split(':')
-                    SECTOR = resp.structure.dimensions.observation[0].values[arrKey[0]].name;
-                    WORK = resp.structure.dimensions.observation[1].values[arrKey[1]].name;
-                    BUILDING_TYPE = resp.structure.dimensions.observation[2].values[arrKey[2]].name;
-                    REGIONTYPE = resp.structure.dimensions.observation[3].values[arrKey[3]].name;
-                    ASGS_2016 = resp.structure.dimensions.observation[4].values[arrKey[4]].name;
-                    FREQUENCY = resp.structure.dimensions.observation[5].values[arrKey[5]].name;
-                    TIME = resp.structure.dimensions.observation[6].values[arrKey[6]].name;
-                    obs = obsvs[Object.keys(obsvs)[i]][0];
-
-                    tableData.push({
-                        "SECTOR": SECTOR,
-                        "WORK": WORK,
-                        "BUILDING_TYPE": BUILDING_TYPE,
-                        "REGIONTYPE": REGIONTYPE,
-                        "ASGS_2016": ASGS_2016,
-                        "FREQUENCY": FREQUENCY,
-                        "TIME": TIME,
-                        "obs": obs
-                    });
+                    var key = Object.keys(obsvs)[i];                    
+                    tableData.push(getDataRow(resp,key));
                 }
                 table.appendRows(tableData);
                 doneCallback();
             });
+
         };
         tableau.registerConnector(myConnector);
-        tableau.connectionName = "Building Approvals by Statistical Area (SA2 and above)";
-        tableau.submit();
+        $(document).ready(function () {
+		    $("#submitButton").click(function () {
+		        tableau.connectionName = "Building Approvals by Statistical Area (SA2 and above)";
+		        tableau.submit();
+		    });
+		});
     })();
 </script>
 </head>
@@ -83,10 +71,9 @@
     <div class="container container-table">
         <div class="row vertical-center-row">
             <div class="text-center col-md-4 col-md-offset-4">
-                <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get the mothertruckin' DATA!</button>
+                <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Building Approvals</button>
             </div>
         </div>
     </div>
 </body>
-
 </html>
