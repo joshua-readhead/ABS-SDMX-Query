@@ -41,9 +41,12 @@
         		for(var i=0;i<arrKey.length;i++) {
         			row[tableInfo.columns[i].id]=resp.structure.dimensions.observation[i].values[arrKey[i]].name;
         		}
-        		obs["VALUE"] = resp.dataSets[0].observations[key][0];
-        		return obs;
+        		row["VALUE"] = resp.dataSets[0].observations[key][0];
+        		return row;
         	}
+		$.ajaxSetup({
+  timeout: 15*60*1000
+});
             $.getJSON("http://stat.data.abs.gov.au/sdmx-json/data/ABS_BA_SA2_ASGS2016/all/all?startTime=2018-08&endTime=2018-08&dimensionAtObservation=allDimensions", function(resp) {
                 var obsvs = resp.dataSets[0].observations;
                 var tableData = [];
