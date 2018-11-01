@@ -59,7 +59,7 @@
 		   return href + (href.substring(href.length-1)=="?"?"":"&")+pidparam[0];
 		}
 		}
-	    var apiurl = "http://stat.data.abs.gov.au/sdmx-json/data/ABS_BA_SA2_ASGS2016/all/all?startTime=2018-08&endTime=2018-08&dimensionAtObservation=allDimensions";
+	    var apiurl = "http://stat.data.abs.gov.au/sdmx-json/data/ABS_BA_SA2_ASGS2016/all/all?startPeriod=2018-04&endPeriod=2018-04&dimensionAtObservation=AllDimensions&detail=Full";
             $.getJSON(ensurePID(apiurl), function(resp) {
                 var obsvs = resp.dataSets[0].observations;
                 var tableData = [];
