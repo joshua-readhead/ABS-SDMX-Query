@@ -22,7 +22,8 @@
             columns : [
               { id : "MEASURE", alias : "Measure", dataType : tableau.dataTypeEnum.string },
               { id : "SECTOR", alias : "Sector of Ownership", dataType : tableau.dataTypeEnum.string },
-              { id : "WORK", alias : "Type of Work", dataType : tableau.dataTypeEnum.string },
+
+		    { id : "WORK", alias : "Type of Work", dataType : tableau.dataTypeEnum.string },
               { id : "BUILDING_TYPE", alias : "Type of Building", dataType : tableau.dataTypeEnum.string },
               { id : "REGIONTYPE", alias : "Geography Level", dataType : tableau.dataTypeEnum.string },
               { id : "ASGS_2016", alias : "Region", dataType : tableau.dataTypeEnum.string },
@@ -47,7 +48,19 @@
 		$.ajaxSetup({
   timeout: 15*60*1000
 });
-            $.getJSON("http://stat.data.abs.gov.au/sdmx-json/data/ABS_BA_SA2_ASGS2016/all/all?startTime=2018-08&endTime=2018-08&dimensionAtObservation=allDimensions", function(resp) {
+	    var ensurePID = function(url) {
+		var re = /([^\?]+\?(?:[^\&]+)*?)(\&*pid\=[^\&]*)(.*)/g;
+		var pidparam = document.location.search!=null?document.location.search.replace("?","").split("&").filter(function(e){return e.indexOf("pid=")==0;}):[];
+		if(pidparam.length==0) {return url;}
+		var href = url.replace(re,"$1$3");
+		if(href.indexOf("?")<0) {
+		   return href+"?"+pidparam[0];
+		}else{
+		   return href + (href.substring(href.length-1)=="?"?"":"&")+pidparam[0];
+		}
+		}
+	    var apiurl = "http://stat.data.abs.gov.au/sdmx-json/data/ABS_BA_SA2_ASGS2016/all/all?startTime=2018-08&endTime=2018-08&dimensionAtObservation=allDimensions";
+            $.getJSON(ensurePID(apiurl), function(resp) {
                 var obsvs = resp.dataSets[0].observations;
                 var tableData = [];
                 for (var i = 0, len = Object.keys(obsvs).length; i < len; i++) {
